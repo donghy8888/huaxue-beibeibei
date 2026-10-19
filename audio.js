@@ -58,6 +58,10 @@ window.SFX = (function () {
     tick() { tone(1000, 0.05, 'square', 0.05); },
     go() { tone(880, 0.25, 'triangle', 0.18); },
     end() { [523, 659, 784, 1046].forEach((f, i) => tone(f, 0.25, 'triangle', 0.15, null, i * 0.12)); },
+    bubble() { for (let i = 0; i < 6; i++) tone(300 + Math.random() * 500, 0.06, 'sine', 0.07, 900 + Math.random() * 600, i * 0.09); },
+    whoosh() { noise(0.35, 0.25, 3000, 0, 300); tone(300, 0.3, 'triangle', 0.08, 700); },
+    fizz() { noise(0.4, 0.18, 8000, 0, 2000); },
+    pop() { noise(0.08, 0.4, 4000, 0, 400); tone(500, 0.1, 'sine', 0.12, 150); },
     clear() { [784, 988, 1175, 1568].forEach((f, i) => tone(f, 0.15, 'triangle', 0.12, null, i * 0.07)); },
   };
 })();

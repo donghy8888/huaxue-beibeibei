@@ -25,6 +25,11 @@
   let wrongBook = store.get('hx_wrong', {});   // id -> {n: 次数, t: 时间}
   const saveWrong = () => store.set('hx_wrong', wrongBook);
   function addWrong(id) { const w = wrongBook[id] || { n: 0 }; w.n++; w.t = Date.now(); wrongBook[id] = w; saveWrong(); }
+  // 实验错题本：id -> {n, t, kind, q, a}（q/a 为 HTML）
+  let labWrong = store.get('hx_wrong_lab', {});
+  const saveLab = () => store.set('hx_wrong_lab', labWrong);
+  function addLabWrong(id, kind, q, a) { const w = labWrong[id] || { n: 0 }; Object.assign(w, { kind, q, a, t: Date.now() }); w.n++; labWrong[id] = w; saveLab(); }
+  function delLabWrong(id) { if (labWrong[id]) { delete labWrong[id]; saveLab(); } }
 
   let toastTimer;
   function toast(msg, ms = 2200) {
@@ -34,14 +39,16 @@
 
   /* ---------- 屏幕切换 ---------- */
   let current = null; // 当前游戏对象
+  let lastGame = null, curGame = null;
   function show(id) {
     $$('.screen').forEach(s => s.classList.toggle('active', s.id === id));
     $('#btnHome').hidden = id === 'scrHome';
-    $('#hud').hidden = !['scrValence', 'scrMatch', 'scrFormula'].includes(id);
+    const el = document.getElementById(id);
+    $('#hud').hidden = !(el && el.dataset.hud);
     window.scrollTo(0, 0);
   }
   function goHome() {
-    stopAll();
+    stopAll(); curGame = null;
     $('#modal').hidden = true;
     refreshMenu();
     $('#brand').textContent = '⚗️ 化学背背背';
@@ -77,7 +84,15 @@
     this.start = () => { end = performance.now() + seconds * 1000; draw(); iv = setInterval(draw, 100); };
     this.stop = () => { clearInterval(iv); iv = null; };
     this.bonus = s => { end += s * 1000; total = Math.max(total, end - performance.now()); draw(); };
+    $('#hudTimeK').textContent = '时间';
     this.preview = () => { $('#hudTime').textContent = seconds; $('#timebarFill').style.width = '100%'; $('.hud .timer').classList.remove('low'); };
+  }
+  function progress(i, n) {
+    $('#hudTimeK').textContent = '进度';
+    $('#hudTime').textContent = Math.min(i + 1, n) + '/' + n;
+    $('#timebarFill').style.width = ((n - i) / n * 100) + '%';
+    $('#timebarFill').style.backgroundPosition = '0 0';
+    $('.hud .timer').classList.remove('low');
   }
   function countdown(cb) {
     const el = $('#countdown'); el.hidden = false;
@@ -98,14 +113,15 @@
     const old = best[key] || 0;
     const rec = hud.score > old;
     if (rec) { best[key] = hud.score; store.set('hx_best', best); }
-    $('#mTitle').textContent = '⏰ 时间到！';
+    $('#mTitle').textContent = (GAMES[game] && GAMES[game].doneTitle) || '⏰ 时间到！';
     $('#mRecord').hidden = !rec || hud.score === 0;
     $('#mStats').innerHTML = [
       ['得分', hud.score], ['最佳', Math.max(old, hud.score)], ['最高连击', hud.maxCombo],
       ...stats,
     ].map(([k, v]) => `<div class="m-stat"><b>${v}</b><span>${k}</span></div>`).join('');
     $('#mMiss').innerHTML = missesHtml || '<p style="text-align:center">🎉 一个都没错，太强了！</p>';
-    $('#btnToWrong').hidden = game !== 'valence';
+    $('#btnToWrong').hidden = !(GAMES[game] && GAMES[game].wrong);
+    lastGame = game;
     $('#modal').hidden = false;
     $('#btnAgain').onclick = () => { $('#modal').hidden = true; startGame(game, current && current.opts); };
   }
@@ -444,12 +460,22 @@
   /* ---------- 错题本 & 口诀表 ---------- */
   function renderWrong() {
     const ids = Object.keys(wrongBook).filter(id => BY_ID[id]).sort((a, b) => wrongBook[b].n - wrongBook[a].n);
+    const lids = Object.keys(labWrong).sort((a, b) => labWrong[b].t - labWrong[a].t);
+    const kinds = new Set(lids.map(id => labWrong[id].kind));
+    $('#btnWbPhen').hidden = !kinds.has('phen');
+    $('#btnWbSpot').hidden = !kinds.has('spot');
+    const KN = { phen: '现象', gas: '气体鉴别', bench: '实验台', dev: '装置', spot: '找茬' };
+    $('#wbLabList').innerHTML = lids.length ? '<h3 class="wb-h3">🧪 实验错题（' + lids.length + '）</h3>' + lids.map(id => {
+      const w = labWrong[id];
+      return `<div class="wb-lab"><span class="wb-kind">${KN[w.kind] || '实验'}</span><div class="wb-q">${w.q}</div><div class="wb-a">✔ ${w.a}</div><span class="wb-cnt">错 ${w.n} 次</span></div>`;
+    }).join('') : '';
     $('#wbSub').textContent = ids.length ? `共 ${ids.length} 个` : '';
-    $('#btnWbPractice').disabled = !ids.length;
+    $('#btnWbPractice').hidden = !ids.length;
     $('#wbList').innerHTML = ids.length ? ids.map(id => {
       const it = BY_ID[id];
       return `<div class="wb-item"><div class="wb-sym">${it.group ? fmt(it.sym) : it.sym}</div><div class="wb-info"><b>${it.name}</b><br>${chips(it.val)}<br><span class="wb-cnt">错 ${wrongBook[id].n} 次</span></div></div>`;
-    }).join('') : '<div class="wb-empty">错题本空空如也～<br>去玩「化合价击毙」吧！</div>';
+    }).join('') : (lids.length ? '' : '<div class="wb-empty">错题本空空如也～<br>去玩「化合价击毙」或实验小游戏吧！</div>');
+    $('#wbSub').textContent = (ids.length || lids.length) ? `化合价 ${ids.length} 个 · 实验 ${lids.length} 题` : '';
   }
   function renderCheat() {
     $('#cheatList').innerHTML = ALL.map(it => `<div class="wb-item${it.noble ? ' noble' : ''}"><div class="wb-sym">${it.group ? fmt(it.sym) : it.sym}</div><div class="wb-info"><b>${it.name}</b><br>${it.noble ? '<small>稀有气体，不出题</small>' : chips(it.val)}</div></div>`).join('');
@@ -461,13 +487,13 @@
     $('[data-best="valence"]').textContent = bv ? '最佳 ' + bv : '';
     $('[data-best="match"]').textContent = bm ? '最佳 ' + bm : '';
     $('[data-best="formula"]').textContent = bf ? '最佳 ' + bf : '';
-    const n = Object.keys(wrongBook).length;
+    const n = Object.keys(wrongBook).length + Object.keys(labWrong).length;
     $('#wbCount').textContent = n ? n + ' 题' : '';
   }
 
   /* ---------- 启动游戏 ---------- */
   const GAMES = {
-    valence: { cls: ValenceGame, scr: 'scrValence', title: '🎯 化合价击毙' },
+    valence: { cls: ValenceGame, scr: 'scrValence', title: '🎯 化合价击毙', wrong: true },
     match: { cls: MatchGame, scr: 'scrMatch', title: '🔗 元素连连看' },
     formula: { cls: FormulaGame, scr: 'scrFormula', title: '🧩 化学式拼装' },
   };
@@ -478,6 +504,8 @@
     if (name === 'cheat') { renderCheat(); $('#brand').textContent = '📜 化合价表'; show('scrCheat'); return; }
     const g = GAMES[name]; if (!g) return;
     $('#brand').textContent = g.title + (opts && opts.practice ? '·错题' : '');
+    curGame = name;
+    if (g.menu) { g.render(); show(g.scr); return; }
     show(g.scr);
     current = new g.cls(opts || {});
     window.HX.game = current;
@@ -488,11 +516,14 @@
   $('#menu').addEventListener('click', e => { const t = e.target.closest('[data-game]'); if (t) startGame(t.dataset.game); });
   $('#segTime').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; settings.time = +b.dataset.v; store.set('hx_settings', settings); SFX.tap(); refreshMenu(); });
   $('#segScope').addEventListener('click', e => { const b = e.target.closest('button'); if (!b) return; settings.scope = b.dataset.v; store.set('hx_settings', settings); SFX.tap(); refreshMenu(); });
-  $('#btnHome').addEventListener('click', goHome);
-  $('#btnToHome').addEventListener('click', goHome);
+  const back = () => { const g = GAMES[curGame]; if (g && g.parent) { $('#modal').hidden = true; startGame(g.parent); } else goHome(); };
+  $('#btnHome').addEventListener('click', back);
+  $('#btnToHome').addEventListener('click', back);
+  $('#btnWbPhen').addEventListener('click', () => startGame('phen', { practice: true }));
+  $('#btnWbSpot').addEventListener('click', () => startGame('spot', { practice: true }));
   $('#btnToWrong').addEventListener('click', () => { $('#modal').hidden = true; startGame('wrongbook'); });
   $('#btnWbPractice').addEventListener('click', () => startGame('valence', { practice: true }));
-  $('#btnWbClear').addEventListener('click', () => { if (confirm('确定清空错题本吗？')) { wrongBook = {}; saveWrong(); renderWrong(); } });
+  $('#btnWbClear').addEventListener('click', () => { if (confirm('确定清空错题本吗？')) { wrongBook = {}; saveWrong(); labWrong = {}; saveLab(); renderWrong(); } });
   const muteBtn = $('#btnMute');
   const drawMute = () => (muteBtn.textContent = SFX.muted ? '🔇' : '🔊');
   muteBtn.addEventListener('click', () => { SFX.toggle(); drawMute(); SFX.tap(); });
@@ -500,6 +531,13 @@
   document.addEventListener('visibilitychange', () => { /* 切到后台不暂停，保持简单 */ });
 
   window.HX = { data: window.CHEM, makeQuestion, COMBOS, compoundName, startGame, goHome };
+  window.HX.core = {
+    $, $$, rand, shuffle, fmt, vs, store, toast, show, hud, Timer, countdown, progress, finish,
+    addLabWrong, delLabWrong, labWrong: () => labWrong,
+    register(name, def) { GAMES[name] = def; },
+    setCurrent(g) { current = g; window.HX.game = g; },
+    stopAll,
+  };
   drawMute();
   refreshMenu();
 })();

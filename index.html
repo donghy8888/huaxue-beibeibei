@@ -8,6 +8,7 @@
 <meta name="description" content="用小游戏背初中化学：化合价击毙、元素连连看、化学式拼装">
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚗️</text></svg>">
 <link rel="stylesheet" href="style.css">
+<link rel="stylesheet" href="lab.css">
 </head>
 <body>
 <div id="app">
@@ -57,6 +58,10 @@
         <div class="gt-body"><div class="gt-name">化学式拼装</div><div class="gt-desc">根据化合价选出正确化学式</div></div>
         <div class="gt-best" data-best="formula"></div>
       </button>
+      <button class="game-tile t6" data-game="lab">
+        <div class="gt-emoji">🧪</div>
+        <div class="gt-body"><div class="gt-name">实验 <span class="new-badge">NEW</span></div><div class="gt-desc">5 个必会实验小游戏：现象、鉴别、实验台、装置、找茬</div></div>
+      </button>
       <button class="game-tile t4" data-game="wrongbook">
         <div class="gt-emoji">📒</div>
         <div class="gt-body"><div class="gt-name">错题本</div><div class="gt-desc">复习答错过的元素和原子团</div></div>
@@ -75,12 +80,12 @@
   <div class="hud" id="hud" hidden>
     <div class="hud-item"><div class="hud-k">得分</div><div class="hud-v" id="hudScore">0</div></div>
     <div class="hud-item"><div class="hud-k">连击</div><div class="hud-v" id="hudCombo">0</div></div>
-    <div class="hud-item timer"><div class="hud-k">时间</div><div class="hud-v" id="hudTime">60</div></div>
+    <div class="hud-item timer"><div class="hud-k" id="hudTimeK">时间</div><div class="hud-v" id="hudTime">60</div></div>
     <div class="timebar"><div id="timebarFill"></div></div>
   </div>
 
   <!-- 化合价击毙 -->
-  <section class="screen" id="scrValence">
+  <section class="screen" id="scrValence" data-hud="1">
     <div class="ptable-wrap">
       <div class="ptable" id="ptable"></div>
       <div class="gtable" id="gtable"></div>
@@ -109,13 +114,13 @@
   </section>
 
   <!-- 元素连连看 -->
-  <section class="screen" id="scrMatch">
+  <section class="screen" id="scrMatch" data-hud="1">
     <div class="match-tip">点一个符号，再点它的中文名！清空一版 +5 秒</div>
     <div class="match-grid" id="matchGrid"></div>
   </section>
 
   <!-- 化学式拼装 -->
-  <section class="screen" id="scrFormula">
+  <section class="screen" id="scrFormula" data-hud="1">
     <div class="f-question card-panel">
       <div class="f-title">这两种成分组成的化合物，化学式是？</div>
       <div class="f-ions" id="fIons"></div>
@@ -130,11 +135,14 @@
     <div class="wb-head card-panel">
       <div>📒 错题本 <small id="wbSub"></small></div>
       <div class="wb-actions">
-        <button class="btn primary" id="btnWbPractice">🎯 只练错题</button>
+        <button class="btn primary" id="btnWbPractice">🎯 只练化合价错题</button>
+        <button class="btn" id="btnWbPhen" hidden>⚡ 练现象错题</button>
+        <button class="btn" id="btnWbSpot" hidden>🔍 练找茬错题</button>
         <button class="btn ghost" id="btnWbClear">清空</button>
       </div>
     </div>
     <div class="wb-list" id="wbList"></div>
+    <div class="wb-lab-list" id="wbLabList"></div>
   </section>
 
   <!-- 口诀表 -->
@@ -169,5 +177,8 @@
 <script src="data.js"></script>
 <script src="audio.js"></script>
 <script src="app.js"></script>
+<script src="lab-data.js"></script>
+<script src="lab-svg.js"></script>
+<script src="lab.js"></script>
 </body>
 </html>

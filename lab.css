@@ -1,0 +1,162 @@
+/* 🧪 实验区样式 */
+.t6 .gt-emoji{background:#d9f5ff}
+.new-badge{font-size:10px;background:#ff3d71;color:#fff;border-radius:8px;padding:1px 6px;vertical-align:3px}
+.lab-hero{text-align:center;margin:4px 0 12px}
+.lab-hero-t{font-size:30px;font-weight:900;color:#00a3c4;text-shadow:3px 3px 0 #fff}
+.lab-hero-s{color:var(--muted);font-size:14px}
+.muted{color:var(--muted);font-size:13px}
+.okc{color:var(--ok)} .badc{color:var(--bad)}
+.shake{animation:shake .4s}
+sub{font-size:.65em}
+
+/* 选择题 */
+.ph-card{text-align:center;padding:14px 12px}
+.ph-card.in{animation:pop .35s}
+.ph-emoji{font-size:38px;line-height:1}
+.ph-title{font-size:20px;font-weight:900;margin-top:6px;line-height:1.35}
+.ph-ask{font-size:13px;color:var(--muted);margin-top:4px}
+.ph-opts{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.opt{text-align:left;padding:12px 14px;border-radius:14px;background:#fff;box-shadow:0 3px 0 #c7c9e0;font-size:15px;font-weight:700;line-height:1.45;transition:transform .08s}
+.opt:active{transform:translateY(3px);box-shadow:none}
+.opt.right{background:var(--ok);color:#fff;box-shadow:0 3px 0 #00896d}
+.opt.wrongpick{background:var(--bad);color:#fff;animation:shake .4s}
+.opt:disabled{opacity:1}
+.opt:disabled:not(.right):not(.wrongpick){opacity:.55}
+.ph-note{margin-top:10px;font-size:14px;line-height:1.55;min-height:24px;background:rgba(255,255,255,.7);border-radius:12px;padding:0 10px}
+.ph-note:empty{background:none}
+.ph-note:not(:empty){padding:8px 10px}
+.ph-next{margin:10px auto 0;display:block}
+.ph-next[hidden]{display:none}
+.eqc{display:inline-flex;flex-direction:column;align-items:center;line-height:1;vertical-align:middle;margin:0 2px}
+.eqc small{font-size:.62em;margin-bottom:-3px;font-weight:800}
+.eqc span{font-size:.95em;letter-spacing:-3px;line-height:.8}
+
+/* 气体侦探 */
+.gs-head{display:flex;justify-content:space-between;font-size:14px;margin-bottom:6px}
+.gs-head span{color:var(--muted)}
+.gs-bottles{display:flex;gap:5px;justify-content:center;align-items:flex-start}
+.gbottle{flex:1;min-width:0;max-width:96px;overflow:hidden;background:rgba(255,255,255,.75);border-radius:14px;padding:4px 2px 6px;box-shadow:var(--shadow);display:flex;flex-direction:column;align-items:center;transition:transform .15s}
+.gbottle.sel{outline:3px solid #ff7aa8;transform:translateY(-3px)}
+.gbottle.good{outline:3px solid var(--ok)} .gbottle.bad{outline:3px solid var(--bad);animation:shake .4s}
+.gbottle.testing{animation:jiggle .5s}
+@keyframes jiggle{25%{transform:rotate(-3deg)}75%{transform:rotate(3deg)}}
+.gasjar{width:100%;height:auto;max-height:150px;overflow:visible}
+.gb-res{font-size:10.5px;line-height:1.3;color:#2d3047;min-height:28px;text-align:center;padding:0 2px}
+.gb-tag{font-size:12px;font-weight:800;color:var(--muted);border:2px dashed #c9c9e0;border-radius:8px;padding:1px 4px;margin-top:2px;white-space:nowrap}
+.gb-tag.set{border-style:solid;border-color:var(--pri);color:var(--pri);background:#f1efff}
+.gbottle.good .gb-tag{color:var(--ok);border-color:var(--ok)} .gbottle.bad .gb-tag{color:var(--bad);border-color:var(--bad)}
+.gs-sec{font-size:13px;font-weight:800;margin:10px 0 6px}
+.gs-tools{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.gtool{background:#fff;border-radius:12px;box-shadow:0 3px 0 #c7c9e0;padding:6px 4px;font-size:12px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2}
+.gtool:active{transform:translateY(3px);box-shadow:none}
+.gt-i{font-size:20px}
+.gs-log{margin-top:8px;background:rgba(255,255,255,.75);border-radius:12px;padding:6px 10px;font-size:12.5px;max-height:92px;overflow:auto;line-height:1.5}
+.gl-row span{color:#0a8f6d;font-weight:700}
+.gl-sum{font-weight:900;color:var(--pri)}
+.gs-labels{display:flex;flex-wrap:wrap;gap:6px}
+.glabel{padding:7px 12px;border-radius:20px;background:#fff;box-shadow:0 2px 0 #c7c9e0;font-weight:800;font-size:14px}
+.glabel.used{background:#e9e7ff;color:#9a95c9}
+.gs-submit{margin:12px auto 8px;display:block;min-width:60%}
+.gs-submit:disabled{opacity:.5}
+/* 气体特效动画 */
+.gj-fx .splint{animation:splintIn .45s ease-out}
+@keyframes splintIn{from{transform:translateY(-40px);opacity:0}}
+.gj-fx .grow{animation:growF .6s ease-out}
+@keyframes growF{from{transform:scale(.1)}}
+.grow,.die,.flick{transform-box:fill-box;transform-origin:50% 100%}
+.flick{animation:flick .25s infinite alternate}
+@keyframes flick{to{transform:scaleY(1.08) scaleX(.95)}}
+.gj-fx .die{animation:dieF .7s forwards .3s}
+@keyframes dieF{to{transform:scale(0);opacity:0}}
+.gj-fx .smoke{opacity:0;animation:smoke 1.4s .6s forwards}
+@keyframes smoke{0%{opacity:.8}100%{opacity:0;transform:translateY(-30px)}}
+.gj-fx .ember{animation:ember .5s infinite alternate}
+@keyframes ember{to{fill:#ffb000}}
+.to-milk{animation:milk 1.4s forwards .2s} @keyframes milk{to{fill:#dcd6c6}}
+.to-red{animation:tored 1.4s forwards .2s} @keyframes tored{to{fill:#e74c3c}}
+.to-milk-s{animation:milkS 1.4s forwards .4s} @keyframes milkS{to{stroke:#dcdcd6;stroke-width:8}}
+.gj-fx .cup{animation:cupIn .5s ease-out}
+@keyframes cupIn{from{transform:translateY(-30px);opacity:0}}
+.gj-fx .drops{opacity:0;animation:fadeIn .8s .6s forwards}
+@keyframes fadeIn{to{opacity:1}}
+.gj-fx .fizz{animation:fadeIn .3s}
+.gbottle.testing .gj-plate,.gbottle .gj-fx:not(:empty)+path+.gj-plate{transform:translateX(14px);transition:transform .3s}
+
+/* 实验台 */
+.bn-goal{font-size:15px}
+.bn-goal b{color:var(--pri);font-size:17px}
+.bn-phase{font-size:13px;color:var(--muted);margin-top:4px}
+.bn-stage{display:flex;align-items:center;gap:8px;margin:8px 0}
+.bn-vessel{width:44%;max-width:200px;flex:none}
+.bench-svg{width:100%;height:auto;display:block}
+.bench-svg .bvl{transition:fill 1.2s}
+.bench-svg .bvflame{transition:opacity .4s}
+.bench-svg .bb{animation:rise 1.4s infinite ease-in;fill:#fff;stroke:#8ab;stroke-width:1}
+@keyframes rise{0%{transform:translateY(0);opacity:0}15%{opacity:1}100%{transform:translateY(-90px);opacity:0}}
+.bench-svg .bvb{transition:opacity .3s}
+.bench-svg .lump{transition:transform 3s;transform-box:fill-box;transform-origin:center}
+.bench-svg .lump.shrink{transform:scale(.55)}
+.bench-svg .coat{transition:fill 2.5s}
+.bench-svg .drop{animation:drip 1s infinite ease-in}
+@keyframes drip{0%{transform:translateY(0);opacity:1}100%{transform:translateY(60px);opacity:0}}
+.bn-say{flex:1;font-size:14px;line-height:1.5}
+.bn-ok{background:#e6fbf4;border-radius:12px;padding:8px 10px;animation:pop .3s}
+.bn-err{background:#ffeceb;border-radius:12px;padding:8px 10px;font-size:13px;animation:shake .4s}
+.bn-tray{min-height:40px;border:2px dashed #b9c0e0;border-radius:14px;padding:6px;display:flex;flex-wrap:wrap;gap:6px;align-items:center;background:rgba(255,255,255,.5)}
+.bn-tray[hidden],.bn-shelf[hidden]{display:none}
+.tchip{background:#fff;border-radius:10px;padding:3px 8px;font-size:13px;font-weight:700;box-shadow:0 2px 0 #d7d9ea}
+.bn-shelf{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:8px}
+.bitem{background:#fff;border-radius:12px;box-shadow:0 3px 0 #c7c9e0;padding:6px 2px;font-size:11.5px;font-weight:700;display:flex;flex-direction:column;align-items:center;gap:2px;line-height:1.2}
+.bitem.on{background:#efeaff;outline:3px solid var(--pri);transform:translateY(2px);box-shadow:none}
+.bi-i{font-size:22px}
+.bq-q{font-weight:900;font-size:16px;margin-top:4px}
+.bn-actions{display:flex;justify-content:center;margin:12px 0}
+.bn-actions .btn{min-width:60%}
+.bn-actions .btn[hidden]{display:none}
+
+/* 装置拼装 */
+.dv-title{font-weight:900;font-size:17px}
+.dv-step{font-size:13px;color:var(--muted);margin-top:4px}
+.dv-built{display:flex;align-items:center;justify-content:center;gap:4px;margin:6px 0}
+.dv-built:empty{display:none}
+.dv-piece{width:42%;background:#e6fbf4;border-radius:12px;padding:4px;text-align:center;font-size:11px;font-weight:700;animation:pop .3s}
+.dv-piece svg{width:100%;height:auto}
+.dv-plus{font-size:22px;font-weight:900;color:var(--muted)}
+.dv-why:empty{display:none}
+.dv-err{background:#ffeceb;border-radius:12px;padding:8px 10px;font-size:14px;line-height:1.5;margin:6px 0;animation:shake .4s}
+.dv-tip{background:#fff7dd;border-radius:12px;padding:10px;font-size:14px;line-height:1.55;margin:6px 0}
+.dv-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.dv-grid[hidden]{display:none}
+.dpart{background:#fff;border-radius:14px;box-shadow:0 3px 0 #c7c9e0;padding:6px;display:flex;flex-direction:column;align-items:center}
+.dpart svg{width:100%;height:auto;max-height:112px}
+.dp-n{font-size:12px;font-weight:800;line-height:1.3;margin-top:2px;text-align:center}
+.dpart.right{outline:3px solid var(--ok);background:#e6fbf4}
+.dpart.wrongpick{outline:3px solid var(--bad);background:#ffeceb;opacity:.7;animation:shake .4s}
+.dv-next{margin:12px auto;display:block;min-width:60%}
+.dv-next[hidden]{display:none}
+.bubbles-s circle{animation:rise 1.6s infinite ease-in}
+.bubbles-s circle:nth-child(2){animation-delay:.5s}.bubbles-s circle:nth-child(3){animation-delay:1s}
+
+/* 操作找茬 */
+.sp-ask{font-weight:900;font-size:17px;text-align:center;margin:2px 0 8px}
+.sp-pic{padding:6px}
+.sp-svg{width:100%;height:auto;display:block;cursor:crosshair}
+.sp-hot{fill:none;stroke:transparent;stroke-width:4}
+.sp-hot.show{stroke:#ff3d71;stroke-dasharray:8 5;animation:hotPulse .8s infinite alternate}
+@keyframes hotPulse{to{stroke-width:7}}
+.sp-tip{font-size:12px;color:var(--muted);text-align:center;margin-top:6px}
+.sp-tip[hidden]{display:none}
+.fall{animation:fall 1.2s infinite ease-in}
+@keyframes fall{0%{transform:translateY(0)}100%{transform:translateY(130px)}}
+
+/* 错题本 · 实验 */
+.wb-h3{margin:16px 0 8px;font-size:16px}
+.wb-lab-list{padding-bottom:24px}
+.wb-lab{background:#fff;border-radius:14px;box-shadow:var(--shadow);padding:10px 12px;margin-bottom:8px;font-size:14px;line-height:1.5;position:relative}
+.wb-kind{position:absolute;right:10px;top:8px;font-size:11px;font-weight:800;background:#e3f6ff;color:#0a7ea4;border-radius:8px;padding:1px 6px}
+.wb-q{font-weight:800;padding-right:60px}
+.wb-a{color:#0a8f6d}
+.lab-mrow{gap:8px}
+.lab-mrow span{flex:1} .lab-mrow b{flex:1.3;font-weight:600;font-size:13px;color:#0a8f6d}
+.wb-actions{flex-wrap:wrap}
+.wb-actions .btn[hidden]{display:none}
