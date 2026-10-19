@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<meta name="theme-color" content="#6c5ce7">
+<title>化学背背背 · 初中化学小游戏</title>
+<meta name="description" content="用小游戏背初中化学：化合价击毙、元素连连看、化学式拼装">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚗️</text></svg>">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- 顶栏 -->
+  <header class="topbar">
+    <button class="icon-btn" id="btnHome" aria-label="回首页" hidden>🏠</button>
+    <div class="brand" id="brand">⚗️ 化学背背背</div>
+    <button class="icon-btn" id="btnMute" aria-label="静音切换">🔊</button>
+  </header>
+
+  <!-- 首页 -->
+  <section class="screen active" id="scrHome">
+    <div class="hero">
+      <div class="hero-title">初中化学<span>背背背</span></div>
+      <div class="hero-sub">玩着玩着就背会了 ✨</div>
+    </div>
+
+    <div class="settings card-panel">
+      <div class="set-row">
+        <span class="set-label">⏱ 每局时长</span>
+        <div class="seg" id="segTime">
+          <button data-v="30">30秒</button><button data-v="60">60秒</button><button data-v="90">90秒</button><button data-v="120">120秒</button>
+        </div>
+      </div>
+      <div class="set-row">
+        <span class="set-label">🧪 题目范围</span>
+        <div class="seg" id="segScope">
+          <button data-v="el">元素</button><button data-v="grp">原子团</button><button data-v="mix">混合</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="menu" id="menu">
+      <button class="game-tile t1" data-game="valence">
+        <div class="gt-emoji">🎯</div>
+        <div class="gt-body"><div class="gt-name">化合价击毙</div><div class="gt-desc">元素翻牌，答对化合价就“击毙”它！</div></div>
+        <div class="gt-best" data-best="valence"></div>
+      </button>
+      <button class="game-tile t2" data-game="match">
+        <div class="gt-emoji">🔗</div>
+        <div class="gt-body"><div class="gt-name">元素连连看</div><div class="gt-desc">符号 ↔ 中文名，限时配对</div></div>
+        <div class="gt-best" data-best="match"></div>
+      </button>
+      <button class="game-tile t3" data-game="formula">
+        <div class="gt-emoji">🧩</div>
+        <div class="gt-body"><div class="gt-name">化学式拼装</div><div class="gt-desc">根据化合价选出正确化学式</div></div>
+        <div class="gt-best" data-best="formula"></div>
+      </button>
+      <button class="game-tile t4" data-game="wrongbook">
+        <div class="gt-emoji">📒</div>
+        <div class="gt-body"><div class="gt-name">错题本</div><div class="gt-desc">复习答错过的元素和原子团</div></div>
+        <div class="gt-best" id="wbCount"></div>
+      </button>
+      <button class="game-tile t5" data-game="cheat">
+        <div class="gt-emoji">📜</div>
+        <div class="gt-body"><div class="gt-name">化合价口诀表</div><div class="gt-desc">先看一遍再开玩</div></div>
+      </button>
+      <div class="game-tile soon"><div class="gt-emoji">🚧</div><div class="gt-body"><div class="gt-name">更多小游戏</div><div class="gt-desc">敬请期待…</div></div></div>
+    </div>
+    <footer class="foot">稀有气体（He Ne Ar）化学性质稳定，初中不考其化合价，翻牌游戏中不出题。</footer>
+  </section>
+
+  <!-- 游戏 HUD（三个游戏共用） -->
+  <div class="hud" id="hud" hidden>
+    <div class="hud-item"><div class="hud-k">得分</div><div class="hud-v" id="hudScore">0</div></div>
+    <div class="hud-item"><div class="hud-k">连击</div><div class="hud-v" id="hudCombo">0</div></div>
+    <div class="hud-item timer"><div class="hud-k">时间</div><div class="hud-v" id="hudTime">60</div></div>
+    <div class="timebar"><div id="timebarFill"></div></div>
+  </div>
+
+  <!-- 化合价击毙 -->
+  <section class="screen" id="scrValence">
+    <div class="ptable-wrap">
+      <div class="ptable" id="ptable"></div>
+      <div class="gtable" id="gtable"></div>
+      <div class="fx-layer" id="fxLayer"></div>
+    </div>
+    <div class="qzone">
+      <div class="bigcard" id="bigcard">
+        <div class="bc-inner" id="bcInner">
+          <div class="bc-face bc-back">?</div>
+          <div class="bc-face bc-front">
+            <div class="bc-z" id="bcZ"></div>
+            <div class="bc-sym" id="bcSym"></div>
+            <div class="bc-name" id="bcName"></div>
+            <div class="bc-badge" id="bcBadge" hidden>多价</div>
+          </div>
+        </div>
+      </div>
+      <div class="qside">
+        <div class="qprompt" id="qprompt">它的常见化合价是？</div>
+        <div class="feedback" id="feedback"></div>
+      </div>
+    </div>
+    <div class="keypad" id="keypad"></div>
+    <div class="kb-hint">键盘：1–7 = 正价，按 “-” 再按数字 = 负价</div>
+    <div class="crosshair" id="crosshair">🔫</div>
+  </section>
+
+  <!-- 元素连连看 -->
+  <section class="screen" id="scrMatch">
+    <div class="match-tip">点一个符号，再点它的中文名！清空一版 +5 秒</div>
+    <div class="match-grid" id="matchGrid"></div>
+  </section>
+
+  <!-- 化学式拼装 -->
+  <section class="screen" id="scrFormula">
+    <div class="f-question card-panel">
+      <div class="f-title">这两种成分组成的化合物，化学式是？</div>
+      <div class="f-ions" id="fIons"></div>
+      <div class="f-hint">小技巧：化合价“交叉约简”，正负化合价代数和为 0</div>
+    </div>
+    <div class="f-options" id="fOptions"></div>
+    <div class="f-feedback" id="fFeedback"></div>
+  </section>
+
+  <!-- 错题本 -->
+  <section class="screen" id="scrWrong">
+    <div class="wb-head card-panel">
+      <div>📒 错题本 <small id="wbSub"></small></div>
+      <div class="wb-actions">
+        <button class="btn primary" id="btnWbPractice">🎯 只练错题</button>
+        <button class="btn ghost" id="btnWbClear">清空</button>
+      </div>
+    </div>
+    <div class="wb-list" id="wbList"></div>
+  </section>
+
+  <!-- 口诀表 -->
+  <section class="screen" id="scrCheat">
+    <div class="card-panel poem">
+      <p>一价钾钠银氢，二价钙镁钡锌，</p>
+      <p>三铝四硅五价磷，二三铁、二四碳，</p>
+      <p>铜汞二价最常见，氧 -2、氟 -1，单质为 0。</p>
+      <p class="poem2">负一硝酸氢氧根，负二硫酸碳酸根，<br>负三记住磷酸根，正一价的是铵根。</p>
+    </div>
+    <div class="cheat-list" id="cheatList"></div>
+  </section>
+
+  <!-- 结算弹窗 -->
+  <div class="modal" id="modal" hidden>
+    <div class="modal-box">
+      <div class="m-title" id="mTitle">时间到！</div>
+      <div class="m-record" id="mRecord" hidden>🏆 新纪录！</div>
+      <div class="m-stats" id="mStats"></div>
+      <div class="m-miss" id="mMiss"></div>
+      <div class="m-btns">
+        <button class="btn primary" id="btnAgain">再来一局</button>
+        <button class="btn" id="btnToWrong">错题本</button>
+        <button class="btn ghost" id="btnToHome">回首页</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+  <div class="countdown" id="countdown" hidden></div>
+</div>
+<script src="data.js"></script>
+<script src="audio.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
