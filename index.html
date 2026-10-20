@@ -9,6 +9,7 @@
 <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>⚗️</text></svg>">
 <link rel="stylesheet" href="style.css">
 <link rel="stylesheet" href="lab.css">
+<link rel="stylesheet" href="slice.css">
 </head>
 <body>
 <div id="app">
@@ -57,6 +58,11 @@
         <div class="gt-emoji">🧩</div>
         <div class="gt-body"><div class="gt-name">化学式拼装</div><div class="gt-desc">根据化合价选出正确化学式</div></div>
         <div class="gt-best" data-best="formula"></div>
+      </button>
+      <button class="game-tile t7" data-game="slice">
+        <div class="gt-emoji">🍉</div>
+        <div class="gt-body"><div class="gt-name">切西瓜复习 <span class="new-badge">NEW</span></div><div class="gt-desc" id="sliceDesc">把今天复习过的知识切一遍！</div></div>
+        <div class="gt-best" data-best="slice"></div>
       </button>
       <button class="game-tile t6" data-game="lab">
         <div class="gt-emoji">🧪</div>
@@ -141,6 +147,7 @@
         <button class="btn ghost" id="btnWbClear">清空</button>
       </div>
     </div>
+    <div class="wb-lab-list" id="wbConsol"></div>
     <div class="wb-list" id="wbList"></div>
     <div class="wb-lab-list" id="wbLabList"></div>
   </section>
@@ -180,5 +187,6 @@
 <script src="lab-data.js"></script>
 <script src="lab-svg.js"></script>
 <script src="lab.js"></script>
+<script src="slice.js"></script>
 </body>
 </html>

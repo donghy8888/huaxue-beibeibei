@@ -120,7 +120,7 @@
     function pick(b, o) {
       SFX.unlock();
       if (!running || busy) return;
-      busy = true; revealChoices($('#phOpts'), b);
+      busy = true; revealChoices($('#phOpts'), b); C.track('phen:' + cur.id, o.ok);
       if (o.ok) {
         const fast = performance.now() - shownAt < 4000;
         right++; hud.add(fast ? 15 : 10); SFX.ding(hud.combo); confetti(b);
@@ -239,7 +239,7 @@
       submitted = true;
       let ok = 0;
       bottles.forEach(b => {
-        const good = b.tag === b.gas;
+        const good = b.tag === b.gas; C.track('gas:' + b.gas, good);
         b.el.classList.add(good ? 'good' : 'bad');
         b.el.querySelector('.gb-tag').innerHTML = good ? '✔ ' + GAS[b.gas].name : `✘ 是${GAS[b.gas].name}`;
         if (good) { ok++; right++; hud.add(20); }
@@ -360,7 +360,7 @@
       const fmt = /=/.test(q.a[0]) ? eq : esc;
       choiceButtons(box.querySelector('.bq-opts'), shuffle(q.a.map((a, k) => ({ html: fmt(a), ok: k === 0 }))), (b, o) => {
         if (!running || busy) return;
-        busy = true; revealChoices(box.querySelector('.bq-opts'), b);
+        busy = true; revealChoices(box.querySelector('.bq-opts'), b); C.track('bench:' + exp.id + ':' + qi, o.ok);
         if (o.ok) { right++; hud.add(10); SFX.ding(hud.combo); confetti(b); }
         else {
           wrong++; hud.miss(); SFX.wrong();
@@ -427,14 +427,14 @@
         stage++;
         if (stage === 1) setTimeout(() => running && showStage(), 700);
         else {
-          $('#dvGrid').hidden = true;
+          $('#dvGrid').hidden = true; C.track('dev:' + task.id, true);
           $('#dvStep').textContent = '✅ 装置搭好啦！';
           $('#dvWhy').innerHTML = `<div class="dv-tip">💡 ${task.tip}</div>`;
           $('#dvNext').hidden = false; $('#dvNext').textContent = i + 1 >= tasks.length ? '🏁 完成' : '下一个 ▶';
           SFX.clear();
         }
       } else {
-        firstTry = false; wrong++; hud.miss(); SFX.wrong();
+        firstTry = false; wrong++; hud.miss(); SFX.wrong(); C.track('dev:' + task.id, false);
         d.classList.add('wrongpick'); d.disabled = true;
         const why = p.why[task.id] || p.why._ || '这个装置不合适。';
         $('#dvWhy').innerHTML = `<div class="dv-err">✘ <b>${p.name}</b>：${why}</div>`;
@@ -491,7 +491,7 @@
     function pick(b, o) {
       SFX.unlock();
       if (!running || busy) return;
-      busy = true; revealChoices($('#spOpts'), b);
+      busy = true; revealChoices($('#spOpts'), b); C.track('spot:' + cur.id, o.ok);
       $('#spPic .sp-hot').classList.add('show'); $('#spTip').hidden = true;
       if (o.ok) {
         right++; hud.add(10); SFX.ding(hud.combo); confetti(b);

@@ -25,6 +25,17 @@
   let wrongBook = store.get('hx_wrong', {});   // id -> {n: 次数, t: 时间}
   const saveWrong = () => store.set('hx_wrong', wrongBook);
   function addWrong(id) { const w = wrongBook[id] || { n: 0 }; w.n++; w.t = Date.now(); wrongBook[id] = w; saveWrong(); }
+  // 每日复习记录：days[YYYY-MM-DD][key] = {n, w}；freq[key] = {n, last}（切西瓜题库用）
+  const today = () => { const t = new Date(); return t.getFullYear() + '-' + String(t.getMonth() + 1).padStart(2, '0') + '-' + String(t.getDate()).padStart(2, '0'); };
+  let hist = store.get('hx_hist', null); if (!hist || !hist.days) hist = { days: {}, freq: {} };
+  function track(key, ok) {
+    const d = today(), day = hist.days[d] || (hist.days[d] = {});
+    const e = day[key] || (day[key] = { n: 0, w: 0 }); e.n++; if (ok === false) e.w++; e.t = Date.now();
+    const f = hist.freq[key] || (hist.freq[key] = { n: 0 }); f.n++; f.last = Date.now();
+    const ds = Object.keys(hist.days).sort(); while (ds.length > 14) delete hist.days[ds.shift()];
+    const fk = Object.keys(hist.freq); if (fk.length > 500) fk.sort((a, b) => hist.freq[a].last - hist.freq[b].last).slice(0, fk.length - 500).forEach(k => delete hist.freq[k]);
+    store.set('hx_hist', hist);
+  }
   // 实验错题本：id -> {n, t, kind, q, a}（q/a 为 HTML）
   let labWrong = store.get('hx_wrong_lab', {});
   const saveLab = () => store.set('hx_wrong_lab', labWrong);
@@ -227,6 +238,7 @@
       locked = true;
       const it = cur, id = idOf(it), cell = cells[id];
       const ok = it.val.includes(v);
+      track('val:' + id, ok);
       const note = it.note ? `<span class="note">💡 ${it.note}</span>` : '';
       if (ok) {
         right++; hud.add(10);
@@ -345,6 +357,7 @@
       if (sel.t.kind === t.kind) { sel.b.classList.remove('sel'); sel = { b, t }; b.classList.add('sel'); SFX.tap(); return; }
       const a = sel.b; sel = null;
       if (a.dataset.id === b.dataset.id) {
+        track('name:' + a.dataset.id, true);
         right++; hud.add(10); SFX.ding(hud.combo);
         a.classList.remove('sel'); a.classList.add('gone'); b.classList.add('gone');
         if (--left === 0) {
@@ -354,6 +367,7 @@
       } else {
         wrong++; hud.miss(); SFX.wrong();
         const symTile = t.kind === 'sym' ? b : a;
+        track('name:' + symTile.dataset.id, false);
         misses[symTile.dataset.id] = (misses[symTile.dataset.id] || 0) + 1;
         a.classList.remove('sel'); a.classList.add('no'); b.classList.add('no');
         busy = true; setTimeout(() => { a.classList.remove('no'); b.classList.remove('no'); busy = false; }, 420);
@@ -436,6 +450,7 @@
       if (!running || busy) return;
       busy = true;
       const ok = f === q.right;
+      track('form:' + q.combo.key, ok);
       $$('.fopt').forEach(o => { if (o.innerHTML === q.right) o.classList.add('right'); });
       if (ok) {
         right++; hud.add(10); SFX.ding(hud.combo);
@@ -461,6 +476,8 @@
   function renderWrong() {
     const ids = Object.keys(wrongBook).filter(id => BY_ID[id]).sort((a, b) => wrongBook[b].n - wrongBook[a].n);
     const lids = Object.keys(labWrong).sort((a, b) => labWrong[b].t - labWrong[a].t);
+    const cons = store.get('hx_consol', {}); const citems = cons.day === today() ? cons.items || [] : [];
+    $('#wbConsol').innerHTML = citems.length ? '<h3 class="wb-h3">🍉 今日巩固（' + citems.length + '）</h3>' + citems.map(c => `<div class="wb-lab cons"><span class="wb-kind">切西瓜</span><div class="wb-q">${c.q}</div><div class="wb-a">✔ ${c.a}</div>${c.tip ? `<div class="wb-tip">💡 ${c.tip}</div>` : ''}</div>`).join('') : '';
     const kinds = new Set(lids.map(id => labWrong[id].kind));
     $('#btnWbPhen').hidden = !kinds.has('phen');
     $('#btnWbSpot').hidden = !kinds.has('spot');
@@ -474,7 +491,7 @@
     $('#wbList').innerHTML = ids.length ? ids.map(id => {
       const it = BY_ID[id];
       return `<div class="wb-item"><div class="wb-sym">${it.group ? fmt(it.sym) : it.sym}</div><div class="wb-info"><b>${it.name}</b><br>${chips(it.val)}<br><span class="wb-cnt">错 ${wrongBook[id].n} 次</span></div></div>`;
-    }).join('') : (lids.length ? '' : '<div class="wb-empty">错题本空空如也～<br>去玩「化合价击毙」或实验小游戏吧！</div>');
+    }).join('') : (lids.length || citems.length ? '' : '<div class="wb-empty">错题本空空如也～<br>去玩「化合价击毙」或实验小游戏吧！</div>');
     $('#wbSub').textContent = (ids.length || lids.length) ? `化合价 ${ids.length} 个 · 实验 ${lids.length} 题` : '';
   }
   function renderCheat() {
@@ -489,6 +506,7 @@
     $('[data-best="formula"]').textContent = bf ? '最佳 ' + bf : '';
     const n = Object.keys(wrongBook).length + Object.keys(labWrong).length;
     $('#wbCount').textContent = n ? n + ' 题' : '';
+    (window.HX && window.HX.menuHooks || []).forEach(f => { try { f(); } catch (e) {} });
   }
 
   /* ---------- 启动游戏 ---------- */
@@ -530,10 +548,11 @@
   document.addEventListener('keydown', e => { if (current && current.onKey && $('#modal').hidden) current.onKey(e); });
   document.addEventListener('visibilitychange', () => { /* 切到后台不暂停，保持简单 */ });
 
-  window.HX = { data: window.CHEM, makeQuestion, COMBOS, compoundName, startGame, goHome };
+  window.HX = { data: window.CHEM, makeQuestion, COMBOS, compoundName, startGame, goHome, menuHooks: [] };
   window.HX.core = {
     $, $$, rand, shuffle, fmt, vs, store, toast, show, hud, Timer, countdown, progress, finish,
     addLabWrong, delLabWrong, labWrong: () => labWrong,
+    track, today, hist: () => hist, wrongBook: () => wrongBook, refreshMenu, BY_ID, ALL,
     register(name, def) { GAMES[name] = def; },
     setCurrent(g) { current = g; window.HX.game = g; },
     stopAll,
